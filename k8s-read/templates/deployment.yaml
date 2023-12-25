@@ -48,8 +48,6 @@ spec:
               value: "kubernetes.default.svc"
             - name: KUBERNETES_SERVICE_PORT
               value: "443"
-          args:
-            - {{ .Values.ks8-read.mode }}
           ports:
             - name: {{ .Values.service.portName }}
               containerPort: {{ .Values.service.port}}

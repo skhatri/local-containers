@@ -5,10 +5,10 @@
 replicaCount: 1
 
 image:
-  repository: cloudnativek8s/ks8-read
+  repository: skhatri/k8s-read
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v2.0.0.2"
+  tag: "v1.0.9"
 
 imagePullSecrets: []
 nameOverride: ""
