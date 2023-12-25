@@ -52,7 +52,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    restart: on-failure
+    restart: always
 
   cassandra:
     image: cassandra:3.11.16
@@ -97,7 +97,7 @@ services:
     depends_on:
       cassandra:
         condition: service_healthy
-    restart: on-failure
+    restart: always
 
   kafka:
     image: bitnami/kafka:3.4.1-debian-11-r117
@@ -146,13 +146,13 @@ services:
       catalogn:
         aliases:
           - kafka-setup
-    restart: on-failure
+    restart: always
 
 
   airflow:
     image: skhatri/airflow:2.0.2
     profiles: ["jobs", "all"]
-    restart: on-failure
+    restart: always
     depends_on:
       postgres:
         condition: service_healthy

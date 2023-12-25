@@ -14,6 +14,7 @@ uninstall kafka
 uninstall kafka-setup
 
 uninstall airflow
+uninstall k8s-read
 
 
 
