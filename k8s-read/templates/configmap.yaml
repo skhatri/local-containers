@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "ks8-read.fullname" . }}-config
+  name: {{ include "k8s-read.fullname" . }}-config
   labels:
-  {{- include "ks8-read.labels" . | nindent 4 }}
+  {{- include "k8s-read.labels" . | nindent 4 }}
 data:
 {{- range $path, $_ := .Files.Glob "files/*.json" }}
 

@@ -1,16 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "ks8-read.fullname" . }}
+  name: {{ include "k8s-read.fullname" . }}
   labels:
-    {{- include "ks8-read.labels" . | nindent 4 }}
+    {{- include "k8s-read.labels" . | nindent 4 }}
+  annotations:
+    {{- include "k8s-read.annotations" . | nindent 4 }}
 spec:
 {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
 {{- end }}
   selector:
     matchLabels:
-      {{- include "ks8-read.selectorLabels" . | nindent 6 }}
+      {{- include "k8s-read.selectorLabels" . | nindent 6 }}
   template:
     metadata:
     {{- with .Values.podAnnotations }}
@@ -18,13 +20,13 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       labels:
-        {{- include "ks8-read.selectorLabels" . | nindent 8 }}
+        {{- include "k8s-read.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "ks8-read.serviceAccountName" . }}
+      serviceAccountName: {{ include "k8s-read.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -73,4 +75,4 @@ spec:
       volumes:
         - name: config-dir
           configMap:
-            name: {{ include "ks8-read.fullname" . }}-config
+            name: {{ include "k8s-read.fullname" . }}-config

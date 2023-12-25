@@ -2,7 +2,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "ks8-read.name" -}}
+{{- define "k8s-read.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -13,7 +13,7 @@ If release name contains chart name it will be used as a full name.
 */}}
 {{- define "k8s-read.readClusterRole" -}}kube-read-cluster-role{{- end -}}
 
-{{- define "ks8-read.fullname" -}}
+{{- define "k8s-read.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -29,36 +29,48 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "ks8-read.chart" -}}
+{{- define "k8s-read.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "ks8-read.labels" -}}
-helm.sh/chart: {{ include "ks8-read.chart" . }}
-{{ include "ks8-read.selectorLabels" . }}
+{{- define "k8s-read.labels" -}}
+helm.sh/chart: {{ include "k8s-read.chart" . }}
+{{ include "k8s-read.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
+{{- define "k8s-read.annotations" -}}
+{{ include "k8s-read.opsAnnotations" . }}
+{{- end }}
+
+{{- define "k8s-read.opsAnnotations" -}}
+core.ops.catalog/name: {{ include "k8s-read.name" . }}
+core.ops.catalog/team: "devops"
+core.ops.catalog/domain: "platform"
+core.ops.catalog/contact: "@user1"
+{{- end }}
+
 {{/*
 Selector labels
 */}}
-{{- define "ks8-read.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "ks8-read.name" . }}
+{{- define "k8s-read.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "k8s-read.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
+
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "ks8-read.serviceAccountName" -}}
+{{- define "k8s-read.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "ks8-read.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "k8s-read.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}

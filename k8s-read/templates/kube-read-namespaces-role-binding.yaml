@@ -3,7 +3,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: kube-read-namespaces-binding
   labels:
-    {{- include "ks8-read.labels" . | nindent 4 }}
+    {{- include "k8s-read.labels" . | nindent 4 }}
 subjects:
   - kind: ServiceAccount
     name: kube-api-reader
