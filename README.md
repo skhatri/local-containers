@@ -3,8 +3,8 @@
 A bunch of docker container config and helm charts for k8s. Could be useful when doing local development.
 
 #### How to start with Docker
-Install Docker, Start It and then do the following
-```
+Install Docker, Start It and then do the following to run all tools.
+```shell
 cd docker
 docker-compose --profile all up -d
 ```
@@ -28,7 +28,7 @@ I update the NodePort range to 5000-32767 so most of the services can run in the
 
 The relevant section of the config file that is presented in edit mode when running colima with --edit option
 
-```
+```yaml
 kubernetes:
    # Enable kubernetes.
    # Default: false
