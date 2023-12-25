@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "airflow.fullname" . }}-dags
+  labels:
+  {{- include "airflow.labels" . | nindent 4 }}
+data:
+{{- range $path, $_ := .Files.Glob "files/*.py" }}
+
+{{ $path | trimPrefix "files/" | indent 2}}: |-
+{{ $.Files.Get $path | indent 4}}
+{{ end }}

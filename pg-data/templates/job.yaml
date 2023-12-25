@@ -1,0 +1,62 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "pg-data.fullname" . }}
+  labels:
+    {{- include "pg-data.labels" . | nindent 4 }}
+spec:
+  activeDeadlineSeconds: 300
+  ttlSecondsAfterFinished: 180
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "pg-data.selectorLabels" . | nindent 8 }}
+    spec:
+      restartPolicy: OnFailure
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "pg-data.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: PGPASSWORD
+              value: "{{ .Values.pg.password }}"
+            - name: "PG_HOST"
+              value: "{{ .Values.pg.host }}"
+            - name: "PG_USER"
+              value: "{{ .Values.pg.user }}"
+          command:
+            - "{{ .Values.pg.initScript }}"
+
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /tmp/data
+              name: sql-data
+            - mountPath: /tmp/scripts
+              name: sh-data
+
+
+      volumes:
+        - name: sql-data
+          configMap:
+            name: {{ include "pg-data.fullname" . }}-sql
+
+        - name: sh-data
+          configMap:
+            name: {{ include "pg-data.fullname" . }}-sh
+            defaultMode: 0755
+
+

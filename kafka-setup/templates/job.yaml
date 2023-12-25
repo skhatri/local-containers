@@ -1,0 +1,54 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "kafka-setup.fullname" . }}
+  labels:
+    {{- include "kafka-setup.labels" . | nindent 4 }}
+spec:
+  activeDeadlineSeconds: 300
+  ttlSecondsAfterFinished: 180
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "kafka-setup.selectorLabels" . | nindent 8 }}
+    spec:
+      restartPolicy: OnFailure
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "kafka-setup.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: "KAFKA_HOST"
+              value: "{{ .Values.kafka.host }}"
+            - name: "TOPICS"
+              value: "{{ .Values.kafka.topics }}"
+          command:
+            - "{{ .Values.kafka.initScript }}"
+
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /tmp/scripts
+              name: sh-data
+
+
+      volumes:
+        - name: sh-data
+          configMap:
+            name: {{ include "kafka-setup.fullname" . }}-sh
+            defaultMode: 0755
+
+

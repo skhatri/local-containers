@@ -1,0 +1,62 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "cass-data.fullname" . }}
+  labels:
+    {{- include "cass-data.labels" . | nindent 4 }}
+spec:
+  activeDeadlineSeconds: 300
+  ttlSecondsAfterFinished: 180
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "cass-data.selectorLabels" . | nindent 8 }}
+    spec:
+      restartPolicy: OnFailure
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "cass-data.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: CASS_PASSWORD
+              value: "{{ .Values.cassandra.password }}"
+            - name: "CASSANDRA_HOST"
+              value: "{{ .Values.cassandra.host }}"
+            - name: "CASS_USER"
+              value: "{{ .Values.cassandra.user }}"
+          command:
+            - "{{ .Values.cassandra.initScript }}"
+
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /tmp/data
+              name: cql-data
+            - mountPath: /tmp/scripts
+              name: sh-data
+
+
+      volumes:
+        - name: cql-data
+          configMap:
+            name: {{ include "cass-data.fullname" . }}-cql
+
+        - name: sh-data
+          configMap:
+            name: {{ include "cass-data.fullname" . }}-sh
+            defaultMode: 0755
+
+

@@ -1,0 +1,17 @@
+{{if .Values.pvc.enabled -}}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ include "cassandra.fullname" . }}
+  labels:
+  {{- include "cassandra.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.pvc.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.pvc.storage | quote}}
+  storageClassName: {{ .Values.pvc.storageClass | quote}}
+  volumeMode: Filesystem
+
+{{ end -}}
