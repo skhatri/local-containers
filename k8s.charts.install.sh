@@ -2,6 +2,13 @@
 
 set -xe -o pipefail
 
+name=$1
+if [[ -n $name ]];then
+  helm upgrade --install ${name} ${name}
+  exit $?;
+fi;
+
+
 helm upgrade --install postgres postgres
 helm upgrade --install pg-data pg-data
 

@@ -79,7 +79,7 @@ affinity: {}
 pvc:
   enabled: true
   accessMode: "ReadWriteOnce"
-  storage: 2Gi
+  storage: 3Gi
   storageClass: "local-path"
 
 
