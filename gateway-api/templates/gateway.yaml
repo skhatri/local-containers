@@ -1,0 +1,138 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: GatewayClass
+metadata:
+  name: eg
+  labels:
+    {{- include "gateway-api.labels" . | nindent 4 }}
+spec:
+  controllerName: gateway.envoyproxy.io/gatewayclass-controller
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: eg 
+  labels:
+    {{- include "gateway-api.labels" . | nindent 4 }}
+spec:
+  gatewayClassName: eg
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: k8s-read-http
+  labels:
+    {{- include "gateway-api.labels" . | nindent 4 }}
+spec:
+  parentRefs:
+    - name: eg
+  hostnames:
+    - "k8s-read.{{ .Values.domain }}"
+  rules:
+    - backendRefs:
+        - group: ""
+          kind: Service
+          name: k8s-read
+          port: 6100
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: airflow-http
+  labels:
+    {{- include "gateway-api.labels" . | nindent 4 }}
+spec:
+  parentRefs:
+    - name: eg
+  hostnames:
+    - "airflow.{{ .Values.domain }}"
+  rules:
+    - backendRefs:
+        - group: ""
+          kind: Service
+          name: airflow
+          port: 8080
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /
+
+
+---
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: Gateway
+metadata:
+  name: pg-gateway
+  labels:
+    {{- include "gateway-api.labels" . | nindent 4 }}
+spec:
+  gatewayClassName: eg
+  listeners:
+  - name: postgres
+    protocol: TCP
+    port: 5432
+    allowedRoutes:
+      kinds:
+      - kind: TCPRoute
+
+---
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: TCPRoute
+metadata:
+  name: postgres-endpoint
+  labels:
+    {{- include "gateway-api.labels" . | nindent 4 }}
+spec:
+  parentRefs:
+  - name: pg-gateway
+    sectionName: postgres
+  rules:
+  - backendRefs:
+    - name: postgres
+      port: 5432
+
+---
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: Gateway
+metadata:
+  name: cs-gateway
+  labels:
+    {{- include "gateway-api.labels" . | nindent 4 }}
+spec:
+  gatewayClassName: eg
+  listeners:
+  - name: cassandra
+    protocol: TCP
+    port: 9042
+    allowedRoutes:
+      kinds:
+      - kind: TCPRoute
+
+---
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: TCPRoute
+metadata:
+  name: cassandra-endpoint
+  labels:
+    {{- include "gateway-api.labels" . | nindent 4 }}
+spec:
+  parentRefs:
+  - name: cs-gateway
+    sectionName: cassandra
+  rules:
+  - backendRefs:
+    - name: cassandra
+      port: 9042
+

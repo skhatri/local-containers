@@ -1,0 +1,6 @@
+Run the following to see the routes
+
+kubectl get tcproutes
+
+kubectl get httproutes
+

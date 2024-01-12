@@ -45,6 +45,7 @@ kubernetes:
      - --disable=traefik
      - --service-node-port-range=5000-32767
  ```
+Full file is included as [conf/k3s-config.yaml](./conf/k3s-config.yaml)
 
 This should allow you to edit k3s config before starting it. K3s should start and your kube config file should be configured
 automatically so you can verify with some kubectl command next.
@@ -63,7 +64,7 @@ kubectl get pods --all-namespaces
 With the running Kubernetes, have it running and then run
 
 ```
-./k8s.charts.install.sh
+./install.k8s.sh
 ```
 
 In doing so, a cassandra, kafka, postgres and airflow instance should be created.
@@ -81,7 +82,7 @@ Mine is 192.168.106.2 and I updated my hosts file with the below
 ### Uninstall
 Remove all charts, stop colima and delete profile.
 ```
-./k8s.charts.uninstall.sh
+./uninstall.k8s.sh
 colima stop
 colima delete
 ```

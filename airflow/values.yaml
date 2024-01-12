@@ -41,9 +41,8 @@ securityContext:
   # runAsUser: 1000
 
 service:
-  type: LoadBalancer
+  type: ClusterIP
   port: 8080
-  nodePort: 8280
 
 resources:
   limits:

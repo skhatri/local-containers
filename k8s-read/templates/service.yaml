@@ -11,6 +11,5 @@ spec:
       targetPort: {{ .Values.service.portName }}
       protocol: TCP
       name: {{ .Values.service.portName }}
-      nodePort: {{ .Values.service.nodePort }}
   selector:
     {{- include "k8s-read.selectorLabels" . | nindent 4 }}

@@ -8,9 +8,8 @@ spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: http
+      targetPort: cql
       protocol: TCP
-      name: http
-      nodePort: {{ .Values.service.nodePort }}
+      name: cql
   selector:
     {{- include "cassandra.selectorLabels" . | nindent 4 }}
