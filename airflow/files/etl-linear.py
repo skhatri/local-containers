@@ -29,7 +29,8 @@ dag = DAG(
         "domain=data-platform",
         "capability=jobs",
         "owner=@user5",
-        "name=linear-etl"
+        "name=linear-etl",
+        "includes=data-stufff"
     ]
 )
 

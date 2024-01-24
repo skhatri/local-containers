@@ -20,7 +20,8 @@ dag = DAG(
         "domain=data-platform",
         "capability=jobs",
         "owner=@user5",
-        "name=conditional-etl"
+        "name=conditional-etl",
+        "includes=data-stuff"
     ]
 )
 
