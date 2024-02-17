@@ -46,6 +46,8 @@ service:
 
 options:
   mountPath: "/opt/cassandra/data"
+  certsPath: "/opt/cassandra/certs"
+
 
 resources:
   limits:

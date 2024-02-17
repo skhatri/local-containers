@@ -45,6 +45,9 @@ spec:
             - mountPath: {{.Values.options.mountPath}}
               name: cassandra-data
               readOnly: false
+            - mountPath: {{.Values.options.certsPath}}
+              name: certs-data
+              readOnly: false
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -71,4 +74,9 @@ spec:
         - name: cql-script
           configMap:
             name: {{ include "cassandra.fullname" . }}
+        - name: certs-data
+          configMap:
+            name: {{ include "cassandra.fullname" . }}-certs
+            defaultMode: 0755
+
 

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "cassandra.fullname" . }}-certs
+  labels:
+  {{- include "cassandra.labels" . | nindent 4 }}
+binaryData:
+{{- range $path, $_ := .Files.Glob "files/certs/*" }}
+{{ $path | trimPrefix "files/certs/" | indent 2 }}: |-
+{{ $.Files.Get $path | b64enc | indent 4}}
+{{ end }}
+
