@@ -52,6 +52,11 @@ spec:
           volumeMounts:
           - mountPath: /var/lib/postgresql/data
             name: postgres-db
+          - mountPath: /opt/postgres/certs
+            name: certs-data
+          - mountPath: /var/lib/postgresql/data/postgresql.conf
+            name: conf-data
+            subPath: postgresql.conf
 
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
@@ -76,3 +81,13 @@ spec:
           {{- else }}
           emptyDir: { }
           {{- end }}
+        - name: certs-data
+          configMap:
+            name: {{ include "postgres.fullname" . }}-certs
+            defaultMode: 0755    
+
+        - name: conf-data
+          configMap:
+            name: {{ include "postgres.fullname" . }}-conf
+            defaultMode: 0755    
+

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "postgres.fullname" . }}-conf
+  labels:
+  {{- include "postgres.labels" . | nindent 4 }}
+binaryData:
+{{- range $path, $_ := .Files.Glob "files/conf/*" }}
+{{ $path | trimPrefix "files/conf/" | indent 2 }}: |-
+{{ $.Files.Get $path | b64enc | indent 4}}
+{{ end }}
+
