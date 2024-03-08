@@ -8,7 +8,7 @@ image:
   repository: skhatri/k8s-read
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v1.0.16"
+  tag: "v1.0.18"
 
 imagePullSecrets: []
 nameOverride: ""
